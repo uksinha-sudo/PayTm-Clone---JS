@@ -119,46 +119,61 @@ const updateBody = zod.object({
 
 userRouter.put("/", authMiddleware, async(req, res) => {
     const { success } = updateBody.safeParse(req.body);
-    if(!success) {
-        res.status(411).json({
-            message: "Error while updating information"
+    try {
+
+        if(!success) {
+            res.status(411).json({
+                message: "Error while updating information"
+            })
+        }
+        
+        await userModel.updateOne(req.body, {
+            id: req.userId
+        })
+        
+        res.json({
+            message: "Updated successfully"
+        })
+    } catch(e){
+        console.log(e);
+        res.status(500).json({
+            message: "Internal server Error, Failed to update information"
         })
     }
-
-    await userModel.updateOne(req.body, {
-        id: req.userId
-    })
-
-    res.json({
-        message: "Updated successfully"
-    })
 })
 
 
 userRouter.get("/bulk", async(req, res) => {
     const filter = req.query.filter || "";
 
-    const users = await userModel.find({
-        $or: [{
-            firstName: {
-                "$regex": filter
-            }
-        }, {
-            lastName: {
-                "$regex": filter
-            }
-        }]
-    })
-
-    res.json({
-        user: users.map(user => ({
-            username: user.username,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            _id: user._id
-        }))
-    })
-})
+    try {
+        const users = await userModel.find({
+            $or: [{
+                firstName: {
+                    "$regex": filter
+                }
+            }, {
+                lastName: {
+                    "$regex": filter
+                }
+            }]
+        })
+        
+        res.json({
+            user: users.map(user => ({
+                username: user.username,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                _id: user._id
+            }))
+        });
+    } catch(e){
+        console.log(e);
+        res.status(500).json({
+            message: "Internal Server error, Failed to find user"
+        })
+    }
+});
 
 
 module.exports = userRouter;
