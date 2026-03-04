@@ -15,29 +15,29 @@ const signupSchema = zod.object({
     lastName: zod.string()
 })
 
-userRouter.post("/signup", async(req, res) => {
+userRouter.post("/signup", async (req, res) => {
     const body = req.body;
-    try { 
+    try {
 
         const { success } = signupSchema.safeParse(req.body);
-        if(!success){
+        if (!success) {
             return res.json({
-                message:"Email already taken / incorrect inputs"
+                message: "Email already taken / incorrect inputs"
             })
         }
-        
+
         const existingUser = await userModel.findOne({
             username: body.username
         })
-        
-        if(existingUser){
+
+        if (existingUser) {
             return res.json({
                 message: "Email already taken / User already Exists"
             })
         }
-        
+
         const hashedPassword = await bcrypt.hash(body.password, 10);
-        
+
         const newUser = await userModel.create({
             username: body.username,
             password: hashedPassword,
@@ -49,11 +49,11 @@ userRouter.post("/signup", async(req, res) => {
             userId: newUser._id,
             balance: 1 + Math.random() * 10000
         })
-        
+
         res.json({
             message: "User created successfully"
         })
-    } catch(e){
+    } catch (e) {
         console.log(e);
         res.status(500).send({
             message: "Internal Server Error, Failed to Create account"
@@ -65,48 +65,48 @@ userRouter.post("/signup", async(req, res) => {
 const signinSchema = zod.object({
     username: zod.string(),
     password: zod.string()
-})
+});
 
 
-userRouter.post("/signin", async(req, res) => {
+userRouter.post("/signin", async (req, res) => {
     try {
 
         const result = signinSchema.safeParse(req.body);
-        if(!result.success){
+        if (!result.success) {
             return res.status(400).json({
                 message: "Wrong credentials / Incorrect Inputs"
             });
         }
-        
+
         const { username, password } = result.data;
 
         const existingUser = await userModel.findOne({
             username
-        })
-        
-        if(!existingUser){
+        });
+
+        if (!existingUser) {
             return res.status(403).send({
-                message:"User doesn't exists"
+                message: "User doesn't exists"
             })
         }
-        
+
         const passwordMatch = await bcrypt.compare(password, existingUser.password)
-        
-        if(!passwordMatch){
+
+        if (!passwordMatch) {
             return res.json({
                 message: "Incorrect Credentials"
             })
         }
-        
+
         const token = jwt.sign({
             userId: existingUser._id
         }, JWT_SECRET);
-        
+
         res.send({
-            message:"User logged in",
+            message: "User logged in",
             token
         });
-    } catch(e){
+    } catch (e) {
         console.log(e);
         res.status(500).send({
             message: "Internal server error, Failed to Sign In"
@@ -114,41 +114,41 @@ userRouter.post("/signin", async(req, res) => {
     }
 
 
-})
+});
 
 const updateBody = zod.object({
     password: zod.string().optional(),
     firstName: zod.string().optional(),
     lastName: zod.string().optional()
-})
+});
 
-userRouter.put("/", authMiddleware, async(req, res) => {
+userRouter.put("/", authMiddleware, async (req, res) => {
     const { success } = updateBody.safeParse(req.body);
     try {
 
-        if(!success) {
+        if (!success) {
             res.status(411).json({
                 message: "Error while updating information"
             })
         }
-        
+
         await userModel.updateOne(req.body, {
             id: req.userId
         })
-        
+
         res.json({
             message: "Updated successfully"
         })
-    } catch(e){
+    } catch (e) {
         console.log(e);
         res.status(500).json({
             message: "Internal server Error, Failed to update information"
         })
     }
-})
+});
 
 
-userRouter.get("/bulk", async(req, res) => {
+userRouter.get("/bulk", async (req, res) => {
     const filter = req.query.filter || "";
 
     try {
@@ -163,7 +163,7 @@ userRouter.get("/bulk", async(req, res) => {
                 }
             }]
         })
-        
+
         res.json({
             user: users.map(user => ({
                 username: user.username,
@@ -172,7 +172,7 @@ userRouter.get("/bulk", async(req, res) => {
                 _id: user._id
             }))
         });
-    } catch(e){
+    } catch (e) {
         console.log(e);
         res.status(500).json({
             message: "Internal Server error, Failed to find user"
