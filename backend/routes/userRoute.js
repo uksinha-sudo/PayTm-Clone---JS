@@ -2,7 +2,7 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const userRouter = express.Router();
 const zod = require('zod');
-const { userModel } = require("../db");
+const { userModel, accountModel } = require("../db");
 const jwt = require("jsonwebtoken")
 const dotenv = require("dotenv");
 const { authMiddleware } = require("../auth/userMiddleware");
@@ -26,7 +26,7 @@ userRouter.post("/signup", async(req, res) => {
             })
         }
         
-        const existingUser = userModel.findOne({
+        const existingUser = await userModel.findOne({
             username: body.username
         })
         
@@ -38,12 +38,17 @@ userRouter.post("/signup", async(req, res) => {
         
         const hashedPassword = await bcrypt.hash(body.password, 10);
         
-        await userModel.create({
+        const newUser = await userModel.create({
             username: body.username,
             password: hashedPassword,
             firstName: body.firstName,
             lastName: body.lastName
         });
+
+        await accountModel.create({
+            userId: newUser._id,
+            balance: 1 + Math.random() * 10000
+        })
         
         res.json({
             message: "User created successfully"

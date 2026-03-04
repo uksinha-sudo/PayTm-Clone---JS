@@ -24,7 +24,7 @@ const authMiddleware = (req, res, next) => {
         }
 
     } catch (err) {
-        return res.startsWith(403).json({ message: "Internal server error" });
+        return res.status(403).json({ message: "Internal server error" });
     }
 };
 
