@@ -8,7 +8,7 @@ const userSchema = mongoose.Schema({
 });
 
 const accountSchema = mongoose.Schema({
-    balance: {type: Number, required: true},
+    balance: {type: Number, required: true, default: 0, min: 0},
     userId: {type: mongoose.Schema.Types.ObjectId, ref: "User", required: true}
 })
 // NOTE FOR Storing balance in DB => In real world, we should never store `floats` for balances in the database.

@@ -1,17 +1,22 @@
-import { useNavigate } from "react-router-dom";
-import { Button } from "../components/Button"
+
+import { Appbar } from "../components/Appbar";
+import { Balance } from "../components/Balance";
 
 
 export const Dashboard = () => {
-    const navigate = useNavigate();
-    const signOut = () => {
-        localStorage.removeItem("token");
-        navigate("/signin");
-    }
+    
     return (
         <>
-            <div>Dashboard</div>
-            <Button onClick={signOut} label={"Sign Out"} />
+        <div className="h-screen w-screen justify-center items-center flex">
+
+            <div className="h-200 w-300 shadow-2xl">
+                <Appbar />
+                <div className="ml-20 mt-10">
+
+                <Balance />
+                </div>
+            </div>
+        </div>
         </>
     )
 }
