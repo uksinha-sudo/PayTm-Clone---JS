@@ -182,5 +182,42 @@ userRouter.get("/bulk", async (req, res) => {
     }
 });
 
+// userRouter.get("/users", authMiddleware, async (req, res) => {
+
+//     try {
+
+//         const users = await userModel.find({ _id: { $ne: req.userId } }, { firstName: 1, _id: 0, lastName: 1 });
+//         /*
+//         This tells MongoDB which documents to fetch.
+
+// _id
+
+// The _id field is the unique ID of each document in MongoDB.
+
+// $ne
+
+// $ne means "Not Equal".
+
+// So this condition means:
+
+// Find all users whose _id is NOT equal to req.userId
+
+// In simple words
+
+// You are fetching all users except the currently logged-in user.
+//         */
+
+//         res.json({
+//             users
+//         });
+//     } catch (e) {
+//         res.status(500).json({
+//             message: "Error fetching users",
+//             error: error.message
+//         });
+//     }
+
+// })
+
 
 module.exports = userRouter;

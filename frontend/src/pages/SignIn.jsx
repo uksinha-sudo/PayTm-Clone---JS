@@ -51,7 +51,7 @@ export const SignIn = () => {
                     <InputBox reference={emailRef} type={"email"} label={"Email"} placeholder="johndoe@example.com" />
                     <InputBox reference={passwordRef} type={"password"} label={"Password"} placeholder="" />
                     <Button onClick={signin} label={"Sign In"} styles={"w-90 mt-4"} />
-                    <p>Don't have an account? <a href="/signup" className="ml-1 underline">Sign Up</a></p>
+                    <p className="select-none">Don't have an account? <a href="/signup" className="ml-1 underline">Sign Up</a></p>
                 </div>
             </div>
         </div>
